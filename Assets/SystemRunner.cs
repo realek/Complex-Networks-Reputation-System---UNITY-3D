@@ -26,7 +26,7 @@ public class SystemRunner : MonoBehaviour {
         output = m_input;
         AddRules();
 
-        for (int i = 0; i < 4; i++)
+        for (int i = 0; i < 1; i++)
         {
             output = IterateLiterals(output);
 
@@ -38,7 +38,7 @@ public class SystemRunner : MonoBehaviour {
 
     void AddRules()
     {
-        m_rules.Add('F', "[FF][[-F]F[+F]][[+F]F[+F]][[+F]F[-F]]");
+        m_rules.Add('F', "F[+F][-F]F[-F][+F]");
     }
 
 
@@ -111,7 +111,7 @@ public class SystemRunner : MonoBehaviour {
 
         for (int i = 0; i < m_nodes.Count; i += 2)
         {
-            CreateTreeBranch(m_nodes[i], m_nodes[i + 1], 0.1f);
+          //  CreateTreeBranch(m_nodes[i], m_nodes[i + 1], 0.1f);
         }
     }
 
@@ -137,7 +137,7 @@ public class SystemRunner : MonoBehaviour {
     {
         for (int i = 0; i < m_nodes.Count; i += 2)
         {
-          //  Debug.DrawLine(m_nodes[i].position, m_nodes[i + 1].position, Color.black);
+            Debug.DrawLine(m_nodes[i].position, m_nodes[i + 1].position, Color.black);
         }
     }
 }
