@@ -1,17 +1,39 @@
-﻿
-using UnityEngine;
-
-[System.Serializable]
-public class Node
+﻿[System.Serializable]
+public class Node<T>
 {
-    public Vector3 position;
-    public Vector3 angle;
-    public float length;
+    private int m_id;
+    private int m_degree;
+    private T m_nodeData;
 
-    public Node(Vector3 point, Vector3 angle, float len)
+    public T Data
     {
-        this.position = point;
-        this.angle = angle;
-        length = len;
+        get
+        {
+            return m_nodeData;
+        }
+    }
+
+    public int ID
+    {
+        get
+        {
+            return m_id;
+        }
+    }
+
+    public void LoadData(T data)
+    {
+        m_nodeData = data;
+    }
+
+    public Node(int id)
+    {
+        m_id = id;
+    }
+
+    public Node(int id,T nodeData)
+    {
+        m_id = id;
+        m_nodeData = nodeData;
     }
 }
