@@ -43,7 +43,7 @@ public class World : MonoBehaviour {
             npcs[i] = GenerateNpcEntry(secondNetwork.transform.position);
         }
 
-        m_network1 = generator.Startup(NetworkModel.Barabasi_Albert, GenerateNpcEntry(secondNetwork.transform.position),
+        m_network1 = generator.Startup(NetworkModel.ER, GenerateNpcEntry(secondNetwork.transform.position),
             GenerateNpcEntry(secondNetwork.transform.position))
             .MultipleStepNetwork(npcs);
 
@@ -68,6 +68,10 @@ public class World : MonoBehaviour {
         for (int i = 0; i < network.Connections.Count; i++)
         {
             Debug.DrawLine(network.Connections[i].First.data.position, network.Connections[i].Second.data.position,colors[i]);
+        }
+
+        for (int i = 0; i < network1.Connections.Count; i++)
+        {
             Debug.DrawLine(network1.Connections[i].First.data.position, network1.Connections[i].Second.data.position, colors[i]);
         }
     }

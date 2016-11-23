@@ -16,6 +16,7 @@ public class NetworkGenerator<T> {
     private Func<bool> linkCondition;
     private int m_maxLinksOnAdd;
     private const int DEFAULT_MAX_LINKS_ON_ADD = 3;
+    private const float DEFAULT_ER_LINK_PROBABILITY = 0.15f;
     private int degSumOfConnected;
 
     public NetworkGenerator()
@@ -39,26 +40,12 @@ public class NetworkGenerator<T> {
     {
         m_storedNetwork = new Network<T>();
         m_currentModel = model;
-        switch (model)
-        {
-            case NetworkModel.Barabasi_Albert:
-                {
-                    BarabasiAlberModel(fnData,snData);
-                    break;
-                }
-
-            case NetworkModel.ER:
-                {
-                    ER();
-                    break;
-                }
-
-        }
+        StartModel(fnData, snData);
         return this;
 
     }
 
-    private void BarabasiAlberModel(T fnData,T snData)
+    private void StartModel(T fnData,T snData)
     {
        int fId =  m_storedNetwork.AddNode(fnData);
        int sId = m_storedNetwork.AddNode(snData); 
@@ -66,6 +53,12 @@ public class NetworkGenerator<T> {
         m_storedNetwork.GetNodeByID(fId).degree = 1;
         m_storedNetwork.GetNodeByID(sId).degree = 1;
         m_storedNetwork.AddConnection(fId, sId);
+        if (m_currentModel == NetworkModel.Barabasi_Albert)
+            m_storedNetwork.AddConnection(fId, sId);
+        else if (m_currentModel == NetworkModel.ER)
+            if (UnityEngine.Random.value < DEFAULT_ER_LINK_PROBABILITY)
+                m_storedNetwork.AddConnection(fId, sId);
+
 
     }
 
@@ -74,15 +67,24 @@ public class NetworkGenerator<T> {
         int sum = 0;
         foreach(Node<T> node in m_storedNetwork.Nodes)
         {
-            sum += node.degree;
+            sum += 2*node.degree;
         }
 
         return sum;
     }
 
-    private void StepBarabasiAlberModel(T newNodeData)
+    private void StepNetworkModel(T newNodeData)
     {
         int nId = m_storedNetwork.AddNode(newNodeData);
+
+        if (m_currentModel == NetworkModel.ER)
+            if (UnityEngine.Random.value > DEFAULT_ER_LINK_PROBABILITY)
+            {
+                m_storedNetwork.GetNodeByID(nId).degree = 0; // no connections for this node
+                return;
+            }
+
+
         int links = m_maxLinksOnAdd;
         links = Mathf.Min(links, m_storedNetwork.Nodes.Count);
 
@@ -101,33 +103,30 @@ public class NetworkGenerator<T> {
     private List<int> FindLinkTargets(int links)
     {
         List<int> ret = new List<int>();
-        int remainingLinks = ComputeConnectedSum();
+        int availableDegree = ComputeConnectedSum();
         for (int i = 0; i < links;i++)
         {
-
-            int rand = UnityEngine.Random.Range(0, remainingLinks);
-            int it = 0;
+            if (availableDegree <= 0)
+                break;
+            int rand = UnityEngine.Random.Range(0, availableDegree);
+            int id = 0;
             int its = 0;
             while (its <= rand)
             {
-                if (it == m_storedNetwork.Nodes.Count)
+                if (id == m_storedNetwork.Nodes.Count)
                     break;
-                if (!ret.Contains(it))
-                    its += m_storedNetwork.GetNodeByID(it).degree;
-                it++;
+                if (!ret.Contains(id))
+                    its += m_storedNetwork.GetNodeByID(id).degree;
+                id++;
 
             }
-            it--;
-            ret.Add(it);
-            remainingLinks -= m_storedNetwork.GetNodeByID(it).degree;
+            id--;
+            ret.Add(id);
+            availableDegree -= m_storedNetwork.GetNodeByID(id).degree;
         }
         return ret;
     }
 
-    private void ER()
-    {
-      
-    }
 
     public NetworkGenerator<T> MultipleStepNetwork(params T[] newNodesData)
     {
@@ -138,12 +137,7 @@ public class NetworkGenerator<T> {
 
     public NetworkGenerator<T> StepNetwork(T newNodeData)
     {
-        switch (m_currentModel)
-        {
-            case NetworkModel.Barabasi_Albert:
-                StepBarabasiAlberModel(newNodeData);
-                break;
-        }
+        StepNetworkModel(newNodeData);
         return this;
     }
 
