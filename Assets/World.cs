@@ -72,12 +72,28 @@ public class World : MonoBehaviour {
 
         for (int i = 0; i < network1.Connections.Count; i++)
         {
+            
             Debug.DrawLine(network1.Connections[i].First.data.position, network1.Connections[i].Second.data.position, colors[i]);
         }
     }
 
+    private void OnDrawGizmos()
+    {
+        if (m_network != null && m_network1 != null)
+        {
+            Gizmos.color = Color.cyan;
+            foreach (Node<NpcEntry> node in m_network.Nodes)
+                Gizmos.DrawSphere(node.data.position, 10.0f);
+
+            Gizmos.color = Color.green;
+            foreach (Node<NpcEntry> node in m_network1.Nodes)
+                Gizmos.DrawSphere(node.data.position, 10.0f);
+        }
+
+    }
+
     // Update is called once per frame
-	void Update ()
+    void Update ()
     {
         DrawNetwork(m_network,m_network1);
       //  Debug.DrawLine(gameObject.transform.position, new Vector3(transform.position.x, transform.position.y, transform.position.z+50),Color.red);
