@@ -4,14 +4,14 @@ public class Connection<T> {
     private Node<T> m_first;
     private Node<T> m_second;
 
-    Node<T> First
+    public Node<T> First
     {
         get
         {
             return m_first;
         }
     }
-    Node<T> Second
+    public Node<T> Second
     {
         get
         {

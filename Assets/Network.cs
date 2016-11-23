@@ -39,13 +39,14 @@ public class Network<T>
         m_connections = new List<Connection<T>>();
     }
 
-    public void AddNode(T nodeData,int degree)
+    public int AddNode(T nodeData)
     {
-        m_nodes.Add(new Node<T>(m_baseID,degree,nodeData));
+        m_nodes.Add(new Node<T>(m_baseID,nodeData));
         m_baseID++;
+        return m_nodes.Count - 1;
     }
 
-    public Node<T> GetNode(int nodeID)
+    public Node<T> GetNodeByID(int nodeID)
     {
         int id = m_nodes.FindIndex(node => node.ID == nodeID);
         if (id == -1)

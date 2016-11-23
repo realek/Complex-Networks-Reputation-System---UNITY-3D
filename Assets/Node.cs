@@ -2,7 +2,7 @@
 public class Node<T>
 {
     private int m_id;
-    private int m_degree;
+    public int degree;
     private T m_nodeData;
 
     public T data
@@ -26,16 +26,14 @@ public class Node<T>
         m_nodeData = data;
     }
 
-    public Node(int id,int degree)
+    public Node(int id)
     {
         m_id = id;
-        m_degree = degree;
     }
 
-    public Node(int id,int degree,T nodeData)
+    public Node(int id, T nodeData)
     {
         m_id = id;
-        m_degree = degree;
         m_nodeData = nodeData;
     }
 }
