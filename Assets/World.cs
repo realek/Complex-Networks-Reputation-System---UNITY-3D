@@ -4,7 +4,7 @@ using System.Collections;
 public class World : MonoBehaviour {
 
     [SerializeField] private Network<NpcEntry> m_network;
-
+    Color[] colors;
 
     //Generate position test func
     public NpcEntry GenerateNpcEntry()
@@ -22,7 +22,8 @@ public class World : MonoBehaviour {
                 return true;
         });
 
-        NpcEntry[] npcs = new NpcEntry[2000];
+        NpcEntry[] npcs = new NpcEntry[20];
+
         for (int i = 0; i < npcs.Length; i++)
         {
             npcs[i] = GenerateNpcEntry();
@@ -31,14 +32,20 @@ public class World : MonoBehaviour {
 
             .MultipleStepNetwork(npcs);
 
+        colors = new Color[m_network.Connections.Count];
+        for (int i = 0; i < colors.Length; i++)
+        {
+;
+            colors[i] = new Color(Random.value, Random.value, Random.value);
+        }
 
     }
 
     private void DrawNetwork(Network<NpcEntry> network)
     {
-        foreach(Connection<NpcEntry> con in network.Connections)
+        for (int i = 0; i < network.Connections.Count; i++)
         {
-            Debug.DrawLine(con.First.data.position, con.Second.data.position);
+            Debug.DrawLine(network.Connections[i].First.data.position, network.Connections[i].Second.data.position,colors[i]);
         }
     }
 
