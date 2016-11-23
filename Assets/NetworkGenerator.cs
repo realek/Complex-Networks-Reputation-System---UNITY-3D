@@ -27,7 +27,7 @@ public class NetworkGenerator<T> {
     public NetworkGenerator(int maxLinksOnNodeAdd)
     {
         m_maxLinksOnAdd = maxLinksOnNodeAdd;
-        m_storedNetwork = new Network<T>();
+       
     }
 
     public void LoadNodeLinkCondition(Func<bool> nodeLinkCondition)
@@ -37,6 +37,7 @@ public class NetworkGenerator<T> {
 
     public NetworkGenerator<T> Startup(NetworkModel model,T fnData, T snData)
     {
+        m_storedNetwork = new Network<T>();
         m_currentModel = model;
         switch (model)
         {
