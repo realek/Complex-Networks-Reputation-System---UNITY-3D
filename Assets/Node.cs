@@ -5,7 +5,7 @@ public class Node<T>
     private int m_degree;
     private T m_nodeData;
 
-    public T Data
+    public T data
     {
         get
         {
@@ -26,14 +26,16 @@ public class Node<T>
         m_nodeData = data;
     }
 
-    public Node(int id)
+    public Node(int id,int degree)
     {
         m_id = id;
+        m_degree = degree;
     }
 
-    public Node(int id,T nodeData)
+    public Node(int id,int degree,T nodeData)
     {
         m_id = id;
+        m_degree = degree;
         m_nodeData = nodeData;
     }
 }

@@ -9,6 +9,23 @@ public class Network<T>
     List<Node<T>> m_nodes;
     List<Connection<T>> m_connections;
 
+    public List<Node<T>> Nodes
+    {
+        get
+        {
+            return m_nodes;
+        }
+    }
+
+
+    public List<Connection<T>> Connections
+    {
+        get
+        {
+            return m_connections;
+        }
+    }
+
     public Network()
     {
         m_nodes = new List<Node<T>>();
@@ -22,10 +39,18 @@ public class Network<T>
         m_connections = new List<Connection<T>>();
     }
 
-    public void AddNode(T nodeData)
+    public void AddNode(T nodeData,int degree)
     {
-        m_nodes.Add(new Node<T>(m_baseID,nodeData));
+        m_nodes.Add(new Node<T>(m_baseID,degree,nodeData));
         m_baseID++;
+    }
+
+    public Node<T> GetNode(int nodeID)
+    {
+        int id = m_nodes.FindIndex(node => node.ID == nodeID);
+        if (id == -1)
+            return null;
+        else return m_nodes[id];
     }
 
     public void AddConnection(int firstNodeId, int secondNodeId)
