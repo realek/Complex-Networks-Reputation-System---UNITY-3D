@@ -13,10 +13,10 @@ public class NetworkGenerator<T> {
 
     private NetworkModel m_currentModel;
     private static Network<T> m_storedNetwork;
-    private Func<bool> linkCondition;
+    private Func<T,T,bool> linkCondition;
     private int m_maxLinksOnAdd;
-    private const int DEFAULT_MAX_LINKS_ON_ADD = 3;
-    private const float DEFAULT_ER_LINK_PROBABILITY = 0.15f;
+    private const int DEFAULT_MAX_LINKS_ON_ADD = 5;
+    private const float DEFAULT_ER_LINK_PROBABILITY = 0.5f;
     private int degSumOfConnected;
 
     public NetworkGenerator()
@@ -31,7 +31,7 @@ public class NetworkGenerator<T> {
        
     }
 
-    public void LoadNodeLinkCondition(Func<bool> nodeLinkCondition)
+    public void LoadNodeLinkCondition(Func<T,T,bool> nodeLinkCondition)
     {
         linkCondition = nodeLinkCondition;
     }
