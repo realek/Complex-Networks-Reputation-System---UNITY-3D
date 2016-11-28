@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System;
+using System.Collections.Generic;
 
 public enum QuestType
 {
@@ -95,17 +96,22 @@ public class Quest {
 
     private sealed class QuestObjectiveDeliver : QuestObjective
     {
-        private bool m_delivered;
+        private bool m_delivered = false;
         private QuestItem m_deliverables;
+
+        public QuestObjectiveDeliver(QuestItem item)
+        {
+            m_deliverables = item;
+        }
 
         public override bool isComplete()
         {
-            throw new NotImplementedException();
+            return m_delivered;
         }
 
         public override void UpdateObjective()
         {
-            throw new NotImplementedException();
+            m_delivered = true;
         }
     }
 
@@ -150,11 +156,12 @@ public class Quest {
         }
     }
     private string m_name;
-    private QuestObjective m_objectives;
+    private Dictionary<Type,QuestObjective> m_objectives;
     private Quest m_nextChainQuest;
 
     public Quest(QuestType type, string name, GameObject questStarter, GameObject questReturn, Quest nextQuest = null)
     {
+        m_objectives = new Dictionary<Type, QuestObjective>();
         m_nextChainQuest = nextQuest;
         m_started = false;
         m_type = type;
@@ -165,17 +172,17 @@ public class Quest {
 
     public void AddKillObjective(int count, params QuestTarget[] targets)
     {
-
+        m_objectives.Add(typeof(QuestObjectiveKill), new QuestObjectiveKill(count, targets));
     }
 
     public void AddCollectObjective(int count, params QuestItem[] items)
     {
-
+        m_objectives.Add(typeof(QuestObjectiveCollect), new QuestObjectiveCollect(count, items));
     }
 
     public void AddDeliverObjective(QuestItem item)
     {
-
+        m_objectives.Add(typeof(QuestObjectiveDeliver), new QuestObjectiveDeliver(item));
     }
 
 
@@ -192,6 +199,13 @@ public class Quest {
 
     public bool Completed()
     {
+        foreach (KeyValuePair<Type, QuestObjective> pair in m_objectives)
+        {
+            if (!pair.Value.isComplete())
+            {
+                return false;
+            }
+        }
         return true;
     }
 }
