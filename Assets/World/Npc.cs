@@ -77,16 +77,20 @@ public class Npc : MonoBehaviour
 
     [SerializeField]
     private Race m_race;
-
     [SerializeField]
     private Morality m_morality;
+    [SerializeField]
+    private Faction m_faction;
 
     public void SetName(string firstName, string lastName)
     {
         m_firstName = firstName;
         m_lastName = lastName;
     }
-
+    public void SetFaction(Faction fac)
+    {
+        m_faction = fac;
+    }
     public void Die()
     {
         m_alive = false;

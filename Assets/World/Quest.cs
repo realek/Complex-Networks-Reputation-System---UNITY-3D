@@ -20,7 +20,8 @@ public enum QuestTarget
     Wolves,
     Rabits,
     Poachers,
-    Cultists
+    Cultists,
+    NamedNpc
 }
 
 public enum QuestItem
