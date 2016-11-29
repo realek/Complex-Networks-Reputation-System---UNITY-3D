@@ -3,14 +3,6 @@ using System.Collections;
 using System;
 using System.Collections.Generic;
 
-public enum QuestType
-{
-    Kill,
-    Collect,
-    Deliver,
-    Chain
-}
-
 public enum QuestTarget
 {
     Bandit,
@@ -39,6 +31,7 @@ public enum QuestItem
     Jewels
 }
 
+[System.Serializable]
 public class Quest {
 
     private abstract class QuestObjective
@@ -118,18 +111,7 @@ public class Quest {
         }
     }
 
-
-
-    public QuestType type
-    {
-        get
-        {
-            return m_type;
-        }
-    }
-    private QuestType m_type;
-
-    public GameObject QuestGiver
+    public Npc QuestGiver
     {
         get
         {
@@ -137,7 +119,7 @@ public class Quest {
         }
     }
 
-    public GameObject QuestEnder
+    public Npc QuestEnder
     {
         get
         {
@@ -145,10 +127,14 @@ public class Quest {
         }
     }
 
-    private GameObject m_questStarter;
-    private GameObject m_questReturn;
+    [SerializeField]
+    private Npc m_questStarter;
+    [SerializeField]
+    private Npc m_questReturn;
 
+    [SerializeField]
     private bool m_started;
+    [SerializeField]
     private bool m_isComplete;
 
     public string name
@@ -158,16 +144,17 @@ public class Quest {
             return m_name;
         }
     }
+    [SerializeField]
     private string m_name;
     private Dictionary<Type,QuestObjective> m_objectives;
+    [SerializeField]
     private Quest m_nextChainQuest;
 
-    public Quest(QuestType type, string name, GameObject questStarter, GameObject questReturn, Quest nextQuest = null)
+    public Quest(string name, Npc questStarter, Npc questReturn, Quest nextQuest = null)
     {
         m_objectives = new Dictionary<Type, QuestObjective>();
         m_nextChainQuest = nextQuest;
         m_started = false;
-        m_type = type;
         m_name = name;
         m_questStarter = questStarter;
         m_questReturn = questReturn;
