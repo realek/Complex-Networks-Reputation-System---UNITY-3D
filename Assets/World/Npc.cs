@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
-
+using System.Collections.Generic;
 
 public enum Morality
 {
@@ -27,7 +27,13 @@ public enum Race
     Gnome
 }
 
-
+public enum NpcRelationship
+{
+    None,
+    Friendly,
+    Neutral,
+    Hostile
+}
 
 public class Npc : MonoBehaviour
 {
@@ -81,7 +87,7 @@ public class Npc : MonoBehaviour
     private Morality m_morality;
     [SerializeField]
     private Faction m_faction;
-
+    private Dictionary<Npc, NpcRelationship> m_npcRelationShips;
     public void SetName(string firstName, string lastName)
     {
         m_firstName = firstName;
@@ -90,6 +96,32 @@ public class Npc : MonoBehaviour
     public void SetFaction(Faction fac)
     {
         m_faction = fac;
+    }
+
+    /// <summary>
+    /// If npc doesnt exist in the relationship database it will be added
+    /// </summary>
+    /// <param name="npc"></param>
+    /// <param name="relationship"></param>
+    public void SetRelationshipWithNpc(Npc npc, NpcRelationship relationship)
+    {
+        NpcRelationship rel;
+        if (m_npcRelationShips.TryGetValue(npc, out rel))
+            m_npcRelationShips[npc] = relationship;
+        else
+            m_npcRelationShips.Add(npc, relationship);
+    }
+
+    /// <summary>
+    /// Returns none if the provided npc is not known, otherwise returns the current relationship between the npcs
+    /// </summary>
+    public NpcRelationship GetRelationship(Npc npc)
+    {
+        NpcRelationship rel;
+        if (m_npcRelationShips.TryGetValue(npc, out rel))
+            return rel;
+        else
+            return NpcRelationship.None;
     }
     public void Die()
     {
