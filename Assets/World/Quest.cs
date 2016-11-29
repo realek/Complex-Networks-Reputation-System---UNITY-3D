@@ -51,11 +51,13 @@ public class Quest {
     {
         private int m_cKillCount = 0;
         private int m_neededKillCount;
-        private QuestTarget[] m_targetTypes;
-        public QuestObjectiveKill(int neededKills, params QuestTarget[] questTargets)
+        private QuestTarget m_targetType;
+        private GameObject[] m_targets;
+        public QuestObjectiveKill(int neededKills, QuestTarget questTargetType, params GameObject[] targets)
         {
             m_neededKillCount = neededKills;
-            m_targetTypes = questTargets;
+            m_targetType = questTargetType;
+            m_targets = targets;
         }
 
         public override bool isComplete()
@@ -171,9 +173,9 @@ public class Quest {
         m_questReturn = questReturn;
     }
 
-    public void AddKillObjective(int count, params QuestTarget[] targets)
+    public void AddKillObjective(int count,QuestTarget targetType,params GameObject[] targets)
     {
-        m_objectives.Add(typeof(QuestObjectiveKill), new QuestObjectiveKill(count, targets));
+        m_objectives.Add(typeof(QuestObjectiveKill), new QuestObjectiveKill(count, targetType,targets));
     }
 
     public void AddCollectObjective(int count, params QuestItem[] items)

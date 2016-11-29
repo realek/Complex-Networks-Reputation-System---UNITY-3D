@@ -12,11 +12,11 @@ public class QuestManager {
     /// <summary>
     /// Generate a quest based on the provided node connection
     /// </summary>
-    /// <typeparam name="Npc">Npc class passed as restricted type</typeparam>
     /// <param name="nodeConnection">Node connection between two npcs</param>
-    public void GenerateQuest<Npc>(Connection<Npc> nodeConnection)
+    public void GenerateKillQuest(Connection<Npc> nodeConnection)
     {
-
+        Quest nQ = new Quest(QuestType.Kill,"Random Kill Quest #"+Random.value, nodeConnection.First.data.gameObject, nodeConnection.First.data.gameObject);
+        nQ.AddKillObjective(1, QuestTarget.NamedNpc, nodeConnection.Second.data.gameObject);
     }
 
 }
