@@ -52,13 +52,52 @@ public class Settlement : MonoBehaviour {
     {
         m_inhabitants = new List<Npc>();
         int count = (int)m_category;
+        Vector3 extents = GetComponent<Collider>().bounds.extents;
+
+        ///No time to make this look pretty....
         for (int i = 0; i < count; i++)
         {
-            m_inhabitants.Add(((GameObject)Instantiate(npcPrefab, gameObject.transform.GetChild(0), true)).GetComponent<Npc>());
+            int tryCount = 25;
+            Vector3 nPOs = Vector3.zero;
+            bool found = false;
+            while (tryCount > 0)
+            {
+                if (m_inhabitants.Count == 0)
+                {
+                    nPOs = GeneratePoint(extents);
+                    found = true;
+                    break;
+                }
+                for (int j = 0; j < m_inhabitants.Count; j++)
+                {
+                    nPOs = GeneratePoint(extents);
+                    if (!m_inhabitants[j].GetComponentInChildren<Collider>().bounds.Contains(nPOs))
+                    {
+                        found = true;
+                        break;
+                    }
+                }
+                if (found)
+                    break;
+                tryCount--;
+            }
+
+            if (!found)
+                continue;
+            m_inhabitants.Add(((GameObject)Instantiate(npcPrefab,nPOs,Quaternion.identity)).GetComponent<Npc>());
+            m_inhabitants[m_inhabitants.Count - 1].transform.SetParent(gameObject.transform.GetChild(0));
             m_inhabitants[m_inhabitants.Count - 1]
                 .GenerateSelf(m_populations[Random.Range(0,m_populations.Count)],(Morality)Random.Range(1,9));
 
         }
+    }
+
+    private Vector3 GeneratePoint(Vector3 extents)
+    {
+        Vector3 lowerLeft = transform.position - extents;
+        Vector3 upperRight = transform.position + extents;
+
+        return new Vector3(Random.Range(lowerLeft.x, upperRight.x), transform.position.y, Random.Range(lowerLeft.z, upperRight.z));
     }
 
     private void OnDrawGizmos()
