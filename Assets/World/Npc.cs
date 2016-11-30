@@ -4,29 +4,29 @@ using System.Collections.Generic;
 
 public enum Morality
 {
-    None,
-    TrueNeutral,
-    NeutralGood,
-    LawfulGood,
-    LawfulNeutral,
-    NeutralEvil,
-    LawfulEvil,
-    ChaoticGood,
-    ChaoticEvil
+    None = 0,
+    TrueNeutral = 1,
+    NeutralGood = 2,
+    LawfulGood = 3,
+    LawfulNeutral = 4,
+    NeutralEvil = 5,
+    LawfulEvil = 6,
+    ChaoticGood = 7,
+    ChaoticEvil = 8
 }
 
 public enum Race
 {
-    None,
-    Human,
-    Elf,
-    Undead,
-    Goblin,
-    Orc,
-    HalfElf,
-    Dwarf,
-    Troll,
-    Gnome
+    None = 0, 
+    Human = 1,
+    Elf = 2 ,
+    Undead = 3,
+    Goblin = 4,
+    Orc = 5,
+    HalfElf = 6,
+    Dwarf = 7,
+    Troll = 8,
+    Gnome = 9
 }
 
 public enum NpcRelationship
@@ -90,7 +90,7 @@ public class Npc : MonoBehaviour
     [SerializeField]
     private Faction m_faction;
     private Dictionary<Npc, NpcRelationship> m_npcRelationShips;
-    public void SetName(string firstName, string lastName)
+    private void SetName(string firstName, string lastName)
     {
         m_firstName = firstName;
         m_lastName = lastName;
@@ -100,6 +100,12 @@ public class Npc : MonoBehaviour
         m_faction = fac;
     }
 
+    public void GenerateSelf(Race race, Morality morals)
+    {
+        m_race = race;
+        m_morality = morals;
+        SetName("FIRSTNAME "+race.ToString() + GetInstanceID(), "LASTNAME "+race.ToString() + GetInstanceID());
+    }
     /// <summary>
     /// If npc doesnt exist in the relationship database it will be added
     /// </summary>
