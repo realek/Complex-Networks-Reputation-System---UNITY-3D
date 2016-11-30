@@ -23,22 +23,23 @@ public class Faction
 {
     public string name;
     public FactionState state;
-    public Morality factionMorality
+    public List<Morality> allowedAlignments
     {
         get
         {
-            return m_factionMorality;
+            return m_AllowedAlignments;
         }
     }
     [SerializeField]
-    private Morality m_factionMorality;
+    private List<Morality> m_AllowedAlignments;
+    [SerializeField]
+    private List<Race> m_AllowedRaces;
     [SerializeField]
     private List<Npc> m_members;
     private Dictionary<Faction, FactionRelationship> m_factionRep;
 
-    public Faction(Morality morality)
+    public Faction()
     {
-        m_factionMorality = morality;
         state = FactionState.Operating;
         m_members = new List<Npc>();
         m_factionRep = new Dictionary<Faction, FactionRelationship>();
@@ -52,14 +53,26 @@ public class Faction
             m_factionRep[target] = relationship;
     }
 
-    public void AddMember(Npc newMember)
+    private bool Evaluate(Npc potentialMember)
     {
-        m_members.Add(newMember);
+        if (m_AllowedAlignments.Contains(potentialMember.morality) && m_AllowedRaces.Contains(potentialMember.race))
+            return true;
+        else
+            return false;
+    }
+    public bool AddMember(Npc newMember)
+    {
+        if (Evaluate(newMember))
+            m_members.Add(newMember);
+        else
+            return false;
+
+        return true;
     }
 
-    public void RemoveMember(Npc member)
+    public bool RemoveMember(Npc member)
     {
-        m_members.Remove(member);
+       return m_members.Remove(member);
     }
 
     public void UpdateMemberStatus()

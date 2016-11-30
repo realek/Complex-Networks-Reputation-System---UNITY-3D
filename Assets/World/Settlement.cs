@@ -45,6 +45,13 @@ public class Settlement : MonoBehaviour {
         }
     }
     private List<Npc> m_inhabitants;
+    public List<Npc> inhabitands
+    {
+        get
+        {
+            return m_inhabitants;
+        }
+    }
     private static Color s_settlementColor = new Color(0, 0.5f, 0, 0.5f);
     private static int defaultcubesperPlane = 10;
 
@@ -87,7 +94,7 @@ public class Settlement : MonoBehaviour {
             m_inhabitants.Add(((GameObject)Instantiate(npcPrefab,nPOs,Quaternion.identity)).GetComponent<Npc>());
             m_inhabitants[m_inhabitants.Count - 1].transform.SetParent(gameObject.transform.GetChild(0));
             m_inhabitants[m_inhabitants.Count - 1]
-                .GenerateSelf(m_populations[Random.Range(0,m_populations.Count)],(Morality)Random.Range(1,9));
+                .GenerateSelf(m_populations[Random.Range(0,m_populations.Count)],(Morality)Random.Range(1,10));
 
         }
     }

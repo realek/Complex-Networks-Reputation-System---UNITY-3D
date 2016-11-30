@@ -12,7 +12,8 @@ public enum Morality
     NeutralEvil = 5,
     LawfulEvil = 6,
     ChaoticGood = 7,
-    ChaoticEvil = 8
+    ChaoticEvil = 8,
+    ChaoticNeutral = 9
 }
 
 public enum Race
@@ -102,6 +103,7 @@ public class Npc : MonoBehaviour
 
     public void GenerateSelf(Race race, Morality morals)
     {
+        m_npcRelationShips = new Dictionary<Npc, NpcRelationship>();
         m_race = race;
         m_morality = morals;
         SetName("FIRSTNAME "+race.ToString() + GetInstanceID(), "LASTNAME "+race.ToString() + GetInstanceID());
@@ -120,6 +122,14 @@ public class Npc : MonoBehaviour
             m_npcRelationShips.Add(npc, relationship);
     }
 
+    /// <summary>
+    /// Indoctrinate the npc, thus changing its morality
+    /// </summary>
+    /// <param name="morals"></param>
+    public void Indoctrinate(Morality morals)
+    {
+        m_morality = morals;
+    }
     /// <summary>
     /// Returns none if the provided npc is not known, otherwise returns the current relationship between the npcs
     /// </summary>
