@@ -18,6 +18,7 @@ public enum FactionRelationship
     Neutral
 }
 
+[System.Serializable]
 public class Faction
 {
     public string name;
@@ -29,7 +30,9 @@ public class Faction
             return m_factionMorality;
         }
     }
+    [SerializeField]
     private Morality m_factionMorality;
+    [SerializeField]
     private List<Npc> m_members;
     private Dictionary<Faction, FactionRelationship> m_factionRep;
 

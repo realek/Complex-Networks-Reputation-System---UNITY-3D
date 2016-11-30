@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
-
+using System.Collections.Generic;
 
 public enum SettlementCategory
 {
@@ -26,16 +26,11 @@ public class Settlement : MonoBehaviour {
     private SettlementCategory m_category;
     [SerializeField]
     private SettlementStatus m_status;
-    private Faction m_controllingfaction;
-    private bool m_controlled;
-
-    public bool independent
-    {
-        get
-        {
-            return !m_controlled;
-        }
-    }
+    [SerializeField]
+    private List<Race> m_populations;
+    [HideInInspector]
+    public Faction controllingfaction;
+    public GameObject npcPrefab;
     public SettlementCategory category
     {
         get
@@ -50,14 +45,14 @@ public class Settlement : MonoBehaviour {
             return m_status;
         }
     }
-    public void SetControllingFaction(Faction fac)
-    {
-        if (fac != null)
-            m_controlled = false;
-        else
-            m_controlled = true;
-        m_controllingfaction = fac;
 
+    private static Color s_settlementColor = new Color(0, 0.5f, 0, 0.5f);
+    private static int defaultcubesperPlane = 10;
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = s_settlementColor;
+        Gizmos.DrawCube(transform.position, transform.localScale * defaultcubesperPlane);
     }
 
 

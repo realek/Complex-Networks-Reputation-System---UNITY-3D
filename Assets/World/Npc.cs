@@ -4,6 +4,7 @@ using System.Collections.Generic;
 
 public enum Morality
 {
+    None,
     TrueNeutral,
     NeutralGood,
     LawfulGood,
@@ -16,6 +17,7 @@ public enum Morality
 
 public enum Race
 {
+    None,
     Human,
     Elf,
     Undead,
