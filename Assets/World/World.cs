@@ -7,6 +7,8 @@ public class World : MonoBehaviour {
     [SerializeField]
     List<Faction> m_allFactions;
     [SerializeField]
+    int independentID;
+    [SerializeField]
     List<Settlement> m_allSettlements;
     Network<Faction> m_factionsInteractions;
     Network<Settlement> m_settlementsInteractions;
@@ -15,6 +17,7 @@ public class World : MonoBehaviour {
     // Use this for initialization
     void Start ()
     {
+        AssignFactions();
         NetworkGenerator<Npc> npcGen = new NetworkGenerator<Npc>();
         NetworkGenerator<Settlement> settlementGen = new NetworkGenerator<Settlement>();
         NetworkGenerator<Faction> factionGen = new NetworkGenerator<Faction>();
@@ -58,6 +61,62 @@ public class World : MonoBehaviour {
 //        m_mainNetwork.AddNode(m_network);
 //        m_mainNetwork.AddNode(m_network1);
 //        m_mainNetwork.AddConnection(0, 1);
+    }
+
+    private void AssignFactions()
+    {
+        Dictionary<Faction,int> m_factions;
+        for (int i = 0; i < m_allSettlements.Count; i++)
+        {
+            m_factions = new Dictionary<Faction, int>();
+            for(int j = 0; j < m_allSettlements[i].inhabitands.Count; j++)
+            {
+
+                bool factionSet = false;
+                for (int k = independentID+1; k < m_allFactions.Count; k++)
+                {
+                    if (m_allFactions[k].AddMember(m_allSettlements[i].inhabitands[j]))
+                    {
+                        m_allSettlements[i].inhabitands[j].SetFaction(m_allFactions[k]);
+
+                        if (m_factions.ContainsKey(m_allFactions[k]))
+                            m_factions[m_allFactions[k]]++;
+                        else
+                            m_factions.Add(m_allFactions[k], 1);
+                        factionSet = true;
+                        break;
+                    }
+                }
+
+                if(!factionSet)
+                {
+                    m_allFactions[independentID].AddMember(m_allSettlements[i].inhabitands[j]);
+                    m_allSettlements[i].inhabitands[j].SetFaction(m_allFactions[independentID]);
+
+                    if (m_factions.ContainsKey(m_allFactions[independentID]))
+                        m_factions[m_allFactions[independentID]]++;
+                    else
+                        m_factions.Add(m_allFactions[independentID], 1);
+                }
+            }
+
+            //set settlement faction
+            int dominantFactionID = independentID;
+            int bestSize = 0;
+            for (int j = 0; j < m_allFactions.Count; j++)
+            {
+                if (m_factions.ContainsKey(m_allFactions[j]))
+                {
+                    if (bestSize < m_factions[m_allFactions[j]])
+                    {
+                        dominantFactionID = j;
+                        bestSize = m_factions[m_allFactions[j]];
+                    }
+                }
+
+            }
+            m_allSettlements[i].controllingfaction = m_allFactions[dominantFactionID];
+        }
     }
 
     //private void DrawNetwork(Network<Npc> network, Network<Npc> network1)

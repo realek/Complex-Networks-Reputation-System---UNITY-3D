@@ -27,7 +27,6 @@ public class Settlement : MonoBehaviour {
     private SettlementStatus m_status;
     [SerializeField]
     private List<Race> m_populations;
-    [HideInInspector]
     public Faction controllingfaction;
     public GameObject npcPrefab;
     public SettlementCategory category
@@ -97,6 +96,8 @@ public class Settlement : MonoBehaviour {
                 .GenerateSelf(m_populations[Random.Range(0,m_populations.Count)],(Morality)Random.Range(1,10));
 
         }
+
+
     }
 
     private Vector3 GeneratePoint(Vector3 extents)
