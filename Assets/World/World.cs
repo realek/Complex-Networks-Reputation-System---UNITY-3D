@@ -77,17 +77,57 @@ public class World : MonoBehaviour {
         m_settlementNetwork = settlementGen.Startup(NetworkModel.Barabasi_Albert, nsettlements[0], nsettlements[1])
             .MultipleStepNetwork(settlements.ToArray());
 
+        ///Create faction networks
+        m_factionsNetwork = new Dictionary<Faction, Network<Npc>>();
+        for (int i = 0; i < m_allFactions.Count; i++)
+        {
+            Npc[] npcs = null;
+            Network<Npc> network = null;
+            if (m_allFactions[i].members.Count == 0)
+            {
+                npcs = new Npc[m_allFactions[i].members.Count];
+                m_factionsNetwork.Add(m_allFactions[i], network);
+                continue;
+            }
+
+            npcs = new Npc[m_allFactions[i].members.Count - 2];
+            m_allFactions[i].members.CopyTo(2, npcs, 0, npcs.Length);
+            network = npcFactionNetwork
+                 .Startup(NetworkModel.Barabasi_Albert, m_allFactions[i].members[0], m_allFactions[i].members[1])
+                  .MultipleStepNetwork(npcs);
+            m_factionsNetwork.Add(m_allFactions[i], network);
+        }
     }
 
     private void OnDrawGizmos()
     {
-        Gizmos.color = Color.red;
+
         if (m_settlementNetwork != null)
+        {
+            Gizmos.color = Color.red;
             for (int i = 0; i < m_settlementNetwork.Connections.Count; i++)
             {
                 Gizmos.DrawLine(m_settlementNetwork.Connections[i].First.data.transform.position,
                     m_settlementNetwork.Connections[i].Second.data.transform.position);
             }
+        }
+
+        if (m_factionsNetwork != null)
+        {
+            Gizmos.color = Color.yellow;
+            for (int i = 0; i < m_allFactions.Count; i++)
+            {
+                var network = m_factionsNetwork[m_allFactions[i]];
+                if (network == null)
+                    continue;
+                for (int j = 0; j < network.Connections.Count; j++)
+                {
+                    Gizmos.DrawLine(network.Connections[j].First.data.transform.position,
+                        network.Connections[j].Second.data.transform.position);
+                }
+            }
+        }
+
     }
 
 }

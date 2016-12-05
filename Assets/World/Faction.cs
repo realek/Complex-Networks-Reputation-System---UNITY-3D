@@ -36,6 +36,14 @@ public class Faction
     private List<Race> m_AllowedRaces;
     [SerializeField]
     private List<Npc> m_members;
+    public List<Npc> members
+    {
+        get
+        {
+            return m_members;
+        }
+    }
+
     private Dictionary<Faction, FactionRelationship> m_factionRep;
 
     public Faction()
