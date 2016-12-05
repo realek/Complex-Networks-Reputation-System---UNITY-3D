@@ -5,155 +5,89 @@ using System.Collections.Generic;
 public class World : MonoBehaviour {
 
     [SerializeField]
-    List<Faction> m_allFactions;
+    private string settlementTag;
     [SerializeField]
-    int independentID;
-    [SerializeField]
-    List<Settlement> m_allSettlements;
-    Network<Faction> m_factionsInteractions;
-    Network<Settlement> m_settlementsInteractions;
-    Dictionary<Settlement, Network<Npc>> m_npcsInteractions;
-
-    // Use this for initialization
-    void Start ()
+    private List<Faction> m_allFactions;
+    public List<Faction> factions
     {
-        AssignFactions();
-        NetworkGenerator<Npc> npcGen = new NetworkGenerator<Npc>();
-        NetworkGenerator<Settlement> settlementGen = new NetworkGenerator<Settlement>();
-        NetworkGenerator<Faction> factionGen = new NetworkGenerator<Faction>();
-
-//        generator.LoadNodeLinkCondition((Npc first,Npc second) => {
-//            if (second == first) // if distance is whatever
-//                return true;
-//            else
-//                return false;
-//        });
-
-//        Npc[] npcs = new Npc[20];
-
-//        for (int i = 0; i < npcs.Length; i++)
-//        {
-//            npcs[i] = GenerateNpcEntry(firstNetwork.transform.position);
-//        }
-//        m_network = generator.Startup(NetworkModel.Barabasi_Albert, GenerateNpcEntry(firstNetwork.transform.position),
-//            GenerateNpcEntry(firstNetwork.transform.position))
-
-//            .MultipleStepNetwork(npcs);
-
-//        for (int i = 0; i < npcs.Length; i++)
-//        {
-//            npcs[i] = GenerateNpcEntry(secondNetwork.transform.position);
-//        }
-
-//        m_network1 = generator.Startup(NetworkModel.ER, GenerateNpcEntry(secondNetwork.transform.position),
-//            GenerateNpcEntry(secondNetwork.transform.position))
-//            .MultipleStepNetwork(npcs);
-
-//        colors = new Color[m_network.Connections.Count];
-//        for (int i = 0; i < colors.Length; i++)
-//        {
-//;
-//            colors[i] = new Color(Random.value, Random.value, Random.value);
-//        }
-
-//        //Testing Higher layer
-//        m_mainNetwork = new Network<Network<Npc>>();
-//        m_mainNetwork.AddNode(m_network);
-//        m_mainNetwork.AddNode(m_network1);
-//        m_mainNetwork.AddConnection(0, 1);
-    }
-
-    private void AssignFactions()
-    {
-        Dictionary<Faction,int> m_factions;
-        for (int i = 0; i < m_allSettlements.Count; i++)
+        get
         {
-            m_factions = new Dictionary<Faction, int>();
-            for(int j = 0; j < m_allSettlements[i].inhabitands.Count; j++)
-            {
-
-                bool factionSet = false;
-                for (int k = independentID+1; k < m_allFactions.Count; k++)
-                {
-                    if (m_allFactions[k].AddMember(m_allSettlements[i].inhabitands[j]))
-                    {
-                        m_allSettlements[i].inhabitands[j].SetFaction(m_allFactions[k]);
-
-                        if (m_factions.ContainsKey(m_allFactions[k]))
-                            m_factions[m_allFactions[k]]++;
-                        else
-                            m_factions.Add(m_allFactions[k], 1);
-                        factionSet = true;
-                        break;
-                    }
-                }
-
-                if(!factionSet)
-                {
-                    m_allFactions[independentID].AddMember(m_allSettlements[i].inhabitands[j]);
-                    m_allSettlements[i].inhabitands[j].SetFaction(m_allFactions[independentID]);
-
-                    if (m_factions.ContainsKey(m_allFactions[independentID]))
-                        m_factions[m_allFactions[independentID]]++;
-                    else
-                        m_factions.Add(m_allFactions[independentID], 1);
-                }
-            }
-
-            //set settlement faction
-            int dominantFactionID = independentID;
-            int bestSize = 0;
-            for (int j = 0; j < m_allFactions.Count; j++)
-            {
-                if (m_factions.ContainsKey(m_allFactions[j]))
-                {
-                    if (bestSize < m_factions[m_allFactions[j]])
-                    {
-                        dominantFactionID = j;
-                        bestSize = m_factions[m_allFactions[j]];
-                    }
-                }
-
-            }
-            m_allSettlements[i].controllingfaction = m_allFactions[dominantFactionID];
+            return m_allFactions;
         }
     }
-
-    //private void DrawNetwork(Network<Npc> network, Network<Npc> network1)
-    //{
-    //    Debug.DrawLine(firstNetwork.transform.position, secondNetwork.transform.position, Color.black);
-
-    //    for (int i = 0; i < network.Connections.Count; i++)
-    //    {
-    //        Debug.DrawLine(network.Connections[i].First.data.transform.position, network.Connections[i].Second.data.transform.position,colors[i]);
-    //    }
-
-    //    for (int i = 0; i < network1.Connections.Count; i++)
-    //    {
-            
-    //        Debug.DrawLine(network1.Connections[i].First.data.transform.position, network1.Connections[i].Second.data.transform.position, colors[i]);
-    //    }
-    //}
-
-    //private void OnDrawGizmos()
-    //{
-    //    if (m_network != null && m_network1 != null)
-    //    {
-    //        Gizmos.color = Color.cyan;
-    //        foreach (Node<Npc> node in m_network.Nodes)
-    //            Gizmos.DrawSphere(node.data.transform.position, 100.0f);
-
-    //        Gizmos.color = Color.green;
-    //        foreach (Node<Npc> node in m_network1.Nodes)
-    //            Gizmos.DrawSphere(node.data.transform.position, 100.0f);
-    //    }
-
-    //}
-
-    // Update is called once per frame
-    void Update ()
+    [SerializeField]
+    private int m_independentID = 0;
+    public int independentID
     {
-      //  DrawNetwork(m_network,m_network1);
-      //  Debug.DrawLine(gameObject.transform.position, new Vector3(transform.position.x, transform.position.y, transform.position.z+50),Color.red);
-	}
+        get
+        {
+            return m_independentID;
+        }
+    }
+    Dictionary<Faction,Network<Npc>> m_factionsNetwork;
+    Network<Settlement> m_settlementNetwork;
+    private static World m_instance;
+    public static World instance
+    {
+        get
+        {
+            return m_instance;
+        }
+    }
+    // Use this for initialization
+    void Awake ()
+    {
+        //Ruberband singleton
+        if (m_instance != null)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        else
+            m_instance = this;
+    }
+
+    private void Start()
+    {
+        NetworkGenerator<Settlement> settlementGen = new NetworkGenerator<Settlement>();
+        NetworkGenerator<Npc> npcFactionNetwork = new NetworkGenerator<Npc>();
+
+        ///Settlements link only if they have the same faction
+        settlementGen.LoadNodeLinkCondition((Settlement first, Settlement second) =>
+        {
+            if (first.controllingfaction == second.controllingfaction)
+                return true;
+            else if (first.controllingfaction == m_allFactions[m_independentID] || second.controllingfaction == m_allFactions[m_independentID])
+                return true;
+            else
+                return false;
+        });
+        List<Settlement> settlements = new List<Settlement>(FindObjectsOfType<Settlement>());
+
+        //init settlements - work around to circumvent the need of a faction serialized class
+        for (int i = 0; i < settlements.Count; i++)
+            settlements[i].Init();
+
+
+        Settlement[] nsettlements = new Settlement[2];
+        nsettlements[0] = settlements[0];
+        nsettlements[1] = settlements[1];
+        settlements.RemoveAt(0);
+        settlements.RemoveAt(0);
+        m_settlementNetwork = settlementGen.Startup(NetworkModel.Barabasi_Albert, nsettlements[0], nsettlements[1])
+            .MultipleStepNetwork(settlements.ToArray());
+
+    }
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.red;
+        if (m_settlementNetwork != null)
+            for (int i = 0; i < m_settlementNetwork.Connections.Count; i++)
+            {
+                Gizmos.DrawLine(m_settlementNetwork.Connections[i].First.data.transform.position,
+                    m_settlementNetwork.Connections[i].Second.data.transform.position);
+            }
+    }
+
 }

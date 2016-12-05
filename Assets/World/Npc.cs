@@ -90,6 +90,13 @@ public class Npc : MonoBehaviour
     private Morality m_morality;
     [SerializeField]
     private Faction m_faction;
+    public Faction faction
+    {
+        get
+        {
+            return m_faction;
+        }
+    }
     private Dictionary<Npc, NpcRelationship> m_npcRelationShips;
     private void SetName(string firstName, string lastName)
     {

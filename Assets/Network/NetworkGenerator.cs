@@ -13,7 +13,6 @@ public class NetworkGenerator<T> {
 
     private NetworkModel m_currentModel;
     private static Network<T> m_storedNetwork;
-    private Func<T,T,bool> linkCondition;
     private int m_maxLinksOnAdd;
     private const int DEFAULT_MAX_LINKS_ON_ADD = 5;
     private const float DEFAULT_ER_LINK_PROBABILITY = 0.5f;
@@ -33,7 +32,7 @@ public class NetworkGenerator<T> {
 
     public void LoadNodeLinkCondition(Func<T,T,bool> nodeLinkCondition)
     {
-        linkCondition = nodeLinkCondition;
+        m_storedNetwork.SetLinkCondition(nodeLinkCondition);
     }
 
     public NetworkGenerator<T> Startup(NetworkModel model,T fnData, T snData)
@@ -76,6 +75,8 @@ public class NetworkGenerator<T> {
     private void StepNetworkModel(T newNodeData)
     {
         int nId = m_storedNetwork.AddNode(newNodeData);
+
+
 
         if (m_currentModel == NetworkModel.ER)
             if (UnityEngine.Random.value > DEFAULT_ER_LINK_PROBABILITY)

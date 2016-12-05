@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System;
 
 public class Network<T>
 {
@@ -8,7 +9,7 @@ public class Network<T>
     private int m_baseID = 0;
     List<Node<T>> m_nodes;
     List<Connection<T>> m_connections;
-
+    private Func<T, T, bool> m_linkCondition = null;
     public List<Node<T>> Nodes
     {
         get
@@ -17,6 +18,11 @@ public class Network<T>
         }
     }
 
+
+    public void SetLinkCondition(Func<T, T, bool> condition)
+    {
+        m_linkCondition = condition;
+    }
 
     public List<Connection<T>> Connections
     {
@@ -62,7 +68,9 @@ public class Network<T>
         int SIdx = m_nodes.FindIndex(node => node.ID == secondNodeId);
         if (SIdx == -1)
             throw new System.Exception("Node with id: " + secondNodeId + " Was not found");
-
+        if(m_linkCondition!=null)
+            if (!m_linkCondition(m_nodes[fIdx].data, m_nodes[SIdx].data))
+                return;
         Connection<T> con = new Connection<T>(m_nodes[fIdx], m_nodes[SIdx]);
         if (!m_connections.Contains(con))
             m_connections.Add(con);
