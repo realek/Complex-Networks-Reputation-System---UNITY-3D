@@ -7,9 +7,9 @@ public class DisplayNetwork : MonoBehaviour {
     public World world;
     public int currentDisplayFaction = 0;
     public int currentDisplaySettlement = 0;
-    public bool displaySettlementsNetwork;
-    public bool displayLocalSettlementNetwork;
-    public bool displayNpcFactionNetwork;
+    private bool m_displaySettlementsNetwork;
+    private bool m_displayLocalSettlementNetwork;
+    private bool m_displayNpcFactionNetwork;
     private Faction m_currentlySelectedFaction;
     private Settlement m_currentlySelectedSettlement;
 
@@ -26,6 +26,21 @@ public class DisplayNetwork : MonoBehaviour {
         {
             return m_currentlySelectedSettlement;
         }
+    }
+
+    public void ToggleSettlements()
+    {
+        m_displaySettlementsNetwork = !m_displaySettlementsNetwork;
+    }
+
+    public void ToggleInhabitants()
+    {
+        m_displayLocalSettlementNetwork = !m_displayLocalSettlementNetwork;
+    }
+
+    public void ToggleFactions()
+    {
+        m_displayNpcFactionNetwork = !m_displayNpcFactionNetwork;
     }
 
     public void PreviousSettlement()
@@ -58,7 +73,7 @@ public class DisplayNetwork : MonoBehaviour {
             if (world.settlementNetwork != null)
             {
                 currentDisplaySettlement = Mathf.Clamp(currentDisplaySettlement, 0, world.settlementNetwork.Nodes.Count - 1);
-                if (displayLocalSettlementNetwork)
+                if (m_displayLocalSettlementNetwork)
                 {
                     Gizmos.color = Color.green;
                     var connections = world.settlementNetwork.Nodes[currentDisplaySettlement].data.localNPCNetwork.Connections;
@@ -69,7 +84,7 @@ public class DisplayNetwork : MonoBehaviour {
                             connections[i].Second.data.transform.position);
                     }
                 }
-                if (displaySettlementsNetwork)
+                if (m_displaySettlementsNetwork)
                 {
                     Gizmos.color = Color.red;
                     for (int i = 0; i < world.settlementNetwork.Connections.Count; i++)
@@ -81,7 +96,7 @@ public class DisplayNetwork : MonoBehaviour {
 
             }
             currentDisplayFaction = Mathf.Clamp(currentDisplayFaction, 0, world.factions.Count - 1);
-            if (world.factionMembershipNetwork != null && displayNpcFactionNetwork)
+            if (world.factionMembershipNetwork != null && m_displayNpcFactionNetwork)
             {
 
                 Gizmos.color = Color.yellow;
