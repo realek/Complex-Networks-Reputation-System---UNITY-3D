@@ -10,12 +10,47 @@ public class DisplayNetwork : MonoBehaviour {
     public bool displaySettlementsNetwork;
     public bool displayLocalSettlementNetwork;
     public bool displayNpcFactionNetwork;
+    private Faction m_currentlySelectedFaction;
+    private Settlement m_currentlySelectedSettlement;
 
+    public Faction SelectedFaction
+    {
+        get
+        {
+            return m_currentlySelectedFaction;
+        }
+    }
+    public Settlement SelectedSettlement
+    {
+        get
+        {
+            return m_currentlySelectedSettlement;
+        }
+    }
 
+    public void PreviousSettlement()
+    {
+        currentDisplaySettlement--;
+        currentDisplaySettlement = Mathf.Clamp(currentDisplaySettlement, 0, world.settlementNetwork.Nodes.Count - 1);
+    }
+    public void NextSettlement()
+    {
+        currentDisplaySettlement++;
+        currentDisplaySettlement = Mathf.Clamp(currentDisplaySettlement, 0, world.settlementNetwork.Nodes.Count - 1);
+    }
+    public void PreviousFaction()
+    {
+        currentDisplayFaction--;
+        currentDisplayFaction = Mathf.Clamp(currentDisplayFaction, 0, world.factions.Count - 1);
+    }
+    public void NextFaction()
+    {
+        currentDisplayFaction++;
+        currentDisplayFaction = Mathf.Clamp(currentDisplayFaction, 0, world.factions.Count - 1);
+    }
 
     private void OnDrawGizmos()
     {
-        
         if (world != null)
         {
             
