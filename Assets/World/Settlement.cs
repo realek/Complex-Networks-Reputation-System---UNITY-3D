@@ -57,7 +57,13 @@ public class Settlement : MonoBehaviour {
         }
     }
     private Network<Npc> m_npcNetwork;
-    public Network<Npc> localNPCNetwork;
+    public Network<Npc> localNPCNetwork
+    {
+        get
+        {
+            return m_npcNetwork;
+        }
+    }
     private static Color s_settlementColor = new Color(0, 0.5f, 0, 0.5f);
     private static int defaultcubesperPlane = 10;
 
@@ -183,63 +189,8 @@ public class Settlement : MonoBehaviour {
 
             }
             controllingfaction = World.instance.factions[dominantFactionID];
-
-
         }
 
-
-
-
-        //for (int i = 0; i < m_allSettlements.Count; i++)
-        //{
-        //    m_factions = new Dictionary<Faction, int>();
-        //    for (int j = 0; j < m_allSettlements[i].inhabitands.Count; j++)
-        //    {
-        //        bool factionSet = false;
-        //        for (int k = independentID + 1; k < m_allFactions.Count; k++)
-        //        {
-        //            if (m_allFactions[k].AddMember(m_allSettlements[i].inhabitands[j]))
-        //            {
-        //                m_allSettlements[i].inhabitands[j].SetFaction(m_allFactions[k]);
-
-        //                if (m_factions.ContainsKey(m_allFactions[k]))
-        //                    m_factions[m_allFactions[k]]++;
-        //                else
-        //                    m_factions.Add(m_allFactions[k], 1);
-        //                factionSet = true;
-        //                break;
-        //            }
-        //        }
-
-        //        if (!factionSet)
-        //        {
-        //            m_allFactions[independentID].AddMember(m_allSettlements[i].inhabitands[j]);
-        //            m_allSettlements[i].inhabitands[j].SetFaction(m_allFactions[independentID]);
-
-        //            if (m_factions.ContainsKey(m_allFactions[independentID]))
-        //                m_factions[m_allFactions[independentID]]++;
-        //            else
-        //                m_factions.Add(m_allFactions[independentID], 1);
-        //        }
-        //    }
-
-        //    //set settlement faction
-        //    int dominantFactionID = independentID;
-        //    int bestSize = 0;
-        //    for (int j = 0; j < m_allFactions.Count; j++)
-        //    {
-        //        if (m_factions.ContainsKey(m_allFactions[j]))
-        //        {
-        //            if (bestSize < m_factions[m_allFactions[j]])
-        //            {
-        //                dominantFactionID = j;
-        //                bestSize = m_factions[m_allFactions[j]];
-        //            }
-        //        }
-
-        //    }
-        //    m_allSettlements[i].controllingfaction = m_allFactions[dominantFactionID];
-        //}
     }
 
     private Vector3 GeneratePoint(Vector3 extents)
@@ -252,19 +203,19 @@ public class Settlement : MonoBehaviour {
 
     private void OnDrawGizmos()
     {
-        Gizmos.color = s_settlementColor;
-        Gizmos.DrawCube(transform.position, transform.localScale * defaultcubesperPlane);
-        if (m_npcNetwork != null)
-        {
-            Gizmos.color = Color.blue;
+      //  Gizmos.color = s_settlementColor;
+      //  Gizmos.DrawCube(transform.position, transform.localScale * defaultcubesperPlane);
+        //if (m_npcNetwork != null)
+        //{
+        //    Gizmos.color = Color.blue;
 
-            for(int i = 0; i < m_npcNetwork.Connections.Count;i++)
-            {
-                Gizmos.DrawLine(m_npcNetwork.Connections[i].First.data.transform.position,
-                    m_npcNetwork.Connections[i].Second.data.transform.position);
-            }
-            //Gizmos.DrawLine()
-        }
+        //    for(int i = 0; i < m_npcNetwork.Connections.Count;i++)
+        //    {
+        //        Gizmos.DrawLine(m_npcNetwork.Connections[i].First.data.transform.position,
+        //            m_npcNetwork.Connections[i].Second.data.transform.position);
+        //    }
+        //    //Gizmos.DrawLine()
+        //}
     }
 
 

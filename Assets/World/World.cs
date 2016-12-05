@@ -25,7 +25,21 @@ public class World : MonoBehaviour {
         }
     }
     Dictionary<Faction,Network<Npc>> m_factionsNetwork;
+    public Dictionary<Faction,Network<Npc>> factionMembershipNetwork
+    {
+        get
+        {
+            return m_factionsNetwork;
+        }
+    }
     Network<Settlement> m_settlementNetwork;
+    public Network<Settlement> settlementNetwork
+    {
+        get
+        {
+            return m_settlementNetwork;
+        }
+    }
     private static World m_instance;
     public static World instance
     {
@@ -99,35 +113,6 @@ public class World : MonoBehaviour {
         }
     }
 
-    private void OnDrawGizmos()
-    {
 
-        if (m_settlementNetwork != null)
-        {
-            Gizmos.color = Color.red;
-            for (int i = 0; i < m_settlementNetwork.Connections.Count; i++)
-            {
-                Gizmos.DrawLine(m_settlementNetwork.Connections[i].First.data.transform.position,
-                    m_settlementNetwork.Connections[i].Second.data.transform.position);
-            }
-        }
-
-        if (m_factionsNetwork != null)
-        {
-            Gizmos.color = Color.yellow;
-            for (int i = 0; i < m_allFactions.Count; i++)
-            {
-                var network = m_factionsNetwork[m_allFactions[i]];
-                if (network == null)
-                    continue;
-                for (int j = 0; j < network.Connections.Count; j++)
-                {
-                    Gizmos.DrawLine(network.Connections[j].First.data.transform.position,
-                        network.Connections[j].Second.data.transform.position);
-                }
-            }
-        }
-
-    }
 
 }
