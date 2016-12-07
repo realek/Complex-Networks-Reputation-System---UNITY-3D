@@ -6,11 +6,11 @@ using System.Collections.Generic;
 public class QuestManager {
 
     [SerializeField]
-    List<Quest> m_quests;
-
+    List<Quest> m_generatedQuests;
+    public static float QUEST_GENERATION_RATE = 0.05f; //chance to make a quest
     public QuestManager()
     {
-        m_quests = new List<Quest>();
+        m_generatedQuests = new List<Quest>();
     }
     /// <summary>
     /// Generate a quest based on the provided node connection
@@ -20,7 +20,7 @@ public class QuestManager {
     {
         Quest nQ = new Quest("Random Kill Quest #"+1+((Random.value+Random.value)/Random.value*Random.value), nodeConnection.First.data, nodeConnection.First.data);
         nQ.AddKillObjective(1, QuestTarget.NamedNpc, nodeConnection.Second.data.gameObject);
-        m_quests.Add(nQ);
+        m_generatedQuests.Add(nQ);
     }
 
     /// <summary>
@@ -31,7 +31,7 @@ public class QuestManager {
     {
         Quest nQ = new Quest("Random Deliver Quest #" + 1 + ((Random.value + Random.value) / Random.value * Random.value), nodeConnection.First.data, nodeConnection.Second.data);
         nQ.AddDeliverObjective((QuestItem)Random.Range(0, 11));
-        m_quests.Add(nQ);
+        m_generatedQuests.Add(nQ);
     }
 
     /// <summary>
@@ -42,7 +42,7 @@ public class QuestManager {
     {
         Quest nQ = new Quest("Random Collect Quest #" + 1 + ((Random.value + Random.value) / Random.value * Random.value), nodeConnection.First.data, nodeConnection.First.data);
         nQ.AddCollectObjective(25, QuestItem.Provisions);
-        m_quests.Add(nQ);
+        m_generatedQuests.Add(nQ);
 
     }
 
@@ -56,6 +56,6 @@ public class QuestManager {
         nQ.AddCollectObjective(10, QuestItem.Weapon);
         Quest nnQ = new Quest("Random Collect Quest #" + 1 + ((Random.value + Random.value) / Random.value * Random.value), nodeConnection.First.data, nodeConnection.First.data, nQ);
         nnQ.AddDeliverObjective(QuestItem.Metals);
-        m_quests.Add(nQ);
+        m_generatedQuests.Add(nQ);
     }
 }

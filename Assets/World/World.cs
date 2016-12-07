@@ -39,8 +39,9 @@ public class World : MonoBehaviour {
         }
     }
 
-    private List<Quest> m_quests;
-    public List<Quest> quests
+    [SerializeField]
+    private QuestManager m_quests;
+    public QuestManager quests
     {
         get
         {
@@ -155,10 +156,59 @@ public class World : MonoBehaviour {
             }
         }
 
-        //Generate Quests
+        //Generate Quests based on settlements
+        m_quests = new QuestManager();
 
+        for (int i = 0; i < settlements.Count; i++)
+        {
+
+            var conn = settlements[i].localNPCNetwork.Connections;
+            for (int j = 0; j < conn.Count; j++)
+            {
+                if (Random.value <= QuestManager.QUEST_GENERATION_RATE)
+                {
+                    var rel = conn[j].First.data.GetRelationship(conn[j].Second.data);
+                    switch (rel)
+                    {
+                        case Relationship.Friendly:
+                            int ch = Random.Range(0, 2);
+                            switch (ch)
+                            {
+                                case 0:  //make deliver quest
+                                    m_quests.GenerateDeliverQuest(conn[j]);
+                                    break;
+
+                                case 1: // make collect quest
+                                    m_quests.GenerateCollectQuest(conn[j]);
+                                    break;
+                            }
+                            break;
+
+                        case Relationship.Hostile:
+                            m_quests.GenerateKillQuest(conn[j]);
+                            break;
+
+                        case Relationship.Neutral:
+                            ch = Random.Range(0, 3);
+
+                            switch(ch)
+                            {
+                                case 0: //deliver
+                                    m_quests.GenerateDeliverQuest(conn[j]);
+                                    break;
+
+                                case 1: //collect
+                                    m_quests.GenerateCollectQuest(conn[j]);
+                                    break;
+                                case 2: //kill
+                                    m_quests.GenerateKillQuest(conn[j]);
+                                    break;
+                            }
+
+                            break;
+                    }
+                }
+            }
+        }
     }
-
-
-
 }

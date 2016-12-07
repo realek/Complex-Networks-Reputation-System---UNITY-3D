@@ -109,6 +109,7 @@ public class Npc : MonoBehaviour
     {
         m_firstName = firstName;
         m_lastName = lastName;
+        name = m_firstName + " " + m_lastName;
     }
     public void SetFaction(Faction fac)
     {
