@@ -10,14 +10,6 @@ public enum FactionState
     Destroyed
 }
 
-public enum FactionRelationship
-{
-    Allied,
-    Subservient,
-    War,
-    Neutral
-}
-
 [System.Serializable]
 public class Faction
 {
@@ -44,16 +36,16 @@ public class Faction
         }
     }
 
-    private Dictionary<Faction, FactionRelationship> m_factionRep;
+    private Dictionary<Faction, Relationship> m_factionRep;
 
     public Faction()
     {
         state = FactionState.Operating;
         m_members = new List<Npc>();
-        m_factionRep = new Dictionary<Faction, FactionRelationship>();
+        m_factionRep = new Dictionary<Faction, Relationship>();
     }
 
-    public void SetRelationship(Faction target, FactionRelationship relationship)
+    public void SetRelationship(Faction target, Relationship relationship)
     {
         if (!m_factionRep.ContainsKey(target))
             m_factionRep.Add(target, relationship);
@@ -90,7 +82,68 @@ public class Faction
                 m_members.Remove(m_members[i]);
     }
 
+    /// <summary>
+    /// returns 1 if friendly
+    /// return 0  if neutral
+    /// returns -1 if hostile
+    /// </summary>
+    /// <param name="fac"></param>
+    /// <returns></returns>
+    public int CreateReputationTowards(Faction fac)
+    {
+        int alignments = 0;
+        int races = 0;
 
+        for (int i = 0; i < fac.m_AllowedAlignments.Count; i++)
+        {
+            if (m_AllowedAlignments.Contains(fac.m_AllowedAlignments[i]))
+                alignments++;
+            else
+                alignments--;
+        }
+
+        for (int i = 0; i < fac.m_AllowedRaces.Count; i++)
+        {
+            if (m_AllowedRaces.Contains(fac.m_AllowedRaces[i]))
+                races++;
+            else
+                races--;
+        }
+
+        int rating = alignments + races;
+        if(rating > 0)
+            return 1;
+        else if(rating == 0)
+            return 0;
+        else
+            return -1;
+    }
+
+    public int GetReputationAsInt(Faction fac)
+    {
+        
+        Relationship rep = Relationship.None;
+        if (fac == this)
+            rep = Relationship.Friendly;
+        else if (m_factionRep.TryGetValue(fac, out rep) == false)
+            throw new System.Exception("Unable to get faction rep");
+        return (int)rep;
+    }
+
+    public Relationship GetReputation(Faction fac)
+    {
+        Relationship rep = Relationship.None;
+        if (fac == this)
+            rep = Relationship.Friendly;
+        else if (m_factionRep.TryGetValue(fac, out rep) == false)
+            throw new System.Exception("Unable to get faction rep");
+        return rep;
+    }
+
+    public bool HasRep(Faction fac)
+    {
+        return m_factionRep.ContainsKey(fac);
+    }
 }
 
 

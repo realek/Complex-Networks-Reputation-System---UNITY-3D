@@ -64,13 +64,6 @@ public class Settlement : MonoBehaviour {
             return m_npcNetwork;
         }
     }
-    private static Color s_settlementColor = new Color(0, 0.5f, 0, 0.5f);
-    private static int defaultcubesperPlane = 10;
-
-    private void Start()
-    {
-       
-    }
 
     public void Init()
     {
@@ -137,6 +130,15 @@ public class Settlement : MonoBehaviour {
         m_npcNetwork = generator.Startup(NetworkModel.Barabasi_Albert, m_inhabitants[0], m_inhabitants[1])
             .MultipleStepNetwork(ninhabitants);
 
+        ///Set Npc relationships
+        for (int i = 0; i < m_npcNetwork.Connections.Count; i++)
+        {
+            int rep = m_npcNetwork.Connections[i].First.data.CreateRelationshipTowards(m_npcNetwork.Connections[i].Second.data);
+            rep += m_npcNetwork.Connections[i].First.data.faction.GetReputationAsInt(m_npcNetwork.Connections[i].Second.data.faction);
+            rep = Mathf.Clamp(rep, -1, 1);
+            m_npcNetwork.Connections[i].First.data.SetRelationshipWithNpc(m_npcNetwork.Connections[i].Second.data, (Relationship)rep);
+            m_npcNetwork.Connections[i].Second.data.SetRelationshipWithNpc(m_npcNetwork.Connections[i].First.data, (Relationship)rep);
+        }
     }
 
     private void AssignFaction()
@@ -200,23 +202,5 @@ public class Settlement : MonoBehaviour {
 
         return new Vector3(Random.Range(lowerLeft.x, upperRight.x), transform.position.y, Random.Range(lowerLeft.z, upperRight.z));
     }
-
-    private void OnDrawGizmos()
-    {
-      //  Gizmos.color = s_settlementColor;
-      //  Gizmos.DrawCube(transform.position, transform.localScale * defaultcubesperPlane);
-        //if (m_npcNetwork != null)
-        //{
-        //    Gizmos.color = Color.blue;
-
-        //    for(int i = 0; i < m_npcNetwork.Connections.Count;i++)
-        //    {
-        //        Gizmos.DrawLine(m_npcNetwork.Connections[i].First.data.transform.position,
-        //            m_npcNetwork.Connections[i].Second.data.transform.position);
-        //    }
-        //    //Gizmos.DrawLine()
-        //}
-    }
-
 
 }

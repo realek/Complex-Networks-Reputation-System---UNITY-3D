@@ -63,7 +63,6 @@ public class DisplayNetwork : MonoBehaviour {
         currentDisplayFaction++;
         currentDisplayFaction = Mathf.Clamp(currentDisplayFaction, 0, world.factions.Count - 1);
     }
-
     private void OnDrawGizmos()
     {
         if (world != null)
