@@ -30,6 +30,13 @@ public enum QuestItem
     Jewels
 }
 
+public enum QuestObjectiveType
+{
+    Kill,
+    Collect,
+    Deliver
+}
+
 [Serializable]
 public class Quest {
 
@@ -37,6 +44,7 @@ public class Quest {
     {
         public abstract bool isComplete();
         public abstract void UpdateObjective();
+        public abstract void ForceComplete();
     }
 
     [Serializable]
@@ -45,8 +53,15 @@ public class Quest {
         private int m_cKillCount = 0;
         private int m_neededKillCount;
         private QuestTarget m_targetType;
-        private GameObject[] m_targets;
-        public QuestObjectiveKill(int neededKills, QuestTarget questTargetType, params GameObject[] targets)
+        private Npc[] m_targets;
+        public Npc[] targets
+        {
+            get
+            {
+                return m_targets;
+            }
+        }
+        public QuestObjectiveKill(int neededKills, QuestTarget questTargetType, params Npc[] targets)
         {
             m_neededKillCount = neededKills;
             m_targetType = questTargetType;
@@ -72,6 +87,11 @@ public class Quest {
                 targetNames += m_targets[i].name + " ";
             }
             return "Kill the following targets : " + targetNames;
+        }
+
+        public override void ForceComplete()
+        {
+            m_cKillCount = m_neededKillCount;
         }
     }
     [Serializable]
@@ -108,14 +128,27 @@ public class Quest {
             }
             return "Collect the following items : " + targetNames;
         }
+
+        public override void ForceComplete()
+        {
+            m_cCollectCount = m_neededCollectCount;
+        }
     }
     [Serializable]
     private sealed class QuestObjectiveDeliver : QuestObjective
     {
         private bool m_delivered = false;
         private QuestItem m_deliverables;
+        private Npc m_deliverTarget;
+        public Npc deliverTarget
+        {
+            get
+            {
+                return m_deliverTarget;
+            }
+        }
 
-        public QuestObjectiveDeliver(QuestItem item)
+        public QuestObjectiveDeliver(QuestItem item, Npc deliverTarget)
         {
             m_deliverables = item;
         }
@@ -133,6 +166,11 @@ public class Quest {
         public override string ToString()
         {
             return "Deliver the following item : " + m_deliverables.ToString();
+        }
+
+        public override void ForceComplete()
+        {
+            m_delivered = true;
         }
     }
 
@@ -159,8 +197,6 @@ public class Quest {
 
     [SerializeField]
     private bool m_started;
-    [SerializeField]
-    private bool m_isComplete;
 
     public string name
     {
@@ -181,38 +217,112 @@ public class Quest {
 
     [SerializeField]
     private string m_description;
-    private Dictionary<Type,QuestObjective> m_objectives;
+    private Dictionary<QuestObjectiveType, QuestObjective> m_objectives;
     [SerializeField]
     private Quest m_nextChainQuest;
 
-    public Quest(string name, Npc questStarter, Npc questReturn, Quest nextQuest = null)
+    public Quest(string name, Npc questStarter, Quest nextQuest = null)
     {
-        m_objectives = new Dictionary<Type, QuestObjective>();
+        m_objectives = new Dictionary<QuestObjectiveType, QuestObjective>();
         m_nextChainQuest = nextQuest;
         m_started = false;
         m_name = name;
         m_questStarter = questStarter;
-        m_questReturn = questReturn;
     }
 
-    public void AddKillObjective(int count,QuestTarget targetType,params GameObject[] targets)
+    public void AddKillObjective(int count,QuestTarget targetType,params Npc[] targets)
     {
-        m_objectives.Add(typeof(QuestObjectiveKill), new QuestObjectiveKill(count, targetType,targets));
-        m_description += m_objectives[typeof(QuestObjectiveKill)].ToString();
+        m_objectives.Add(QuestObjectiveType.Kill, new QuestObjectiveKill(count, targetType,targets));
+        m_description += m_objectives[QuestObjectiveType.Kill].ToString();
     }
 
     public void AddCollectObjective(int count, params QuestItem[] items)
     {
-        m_objectives.Add(typeof(QuestObjectiveCollect), new QuestObjectiveCollect(count, items));
-        m_description += m_objectives[typeof(QuestObjectiveCollect)].ToString();
+        m_objectives.Add(QuestObjectiveType.Collect, new QuestObjectiveCollect(count, items));
+        m_description += m_objectives[QuestObjectiveType.Collect].ToString();
     }
 
-    public void AddDeliverObjective(QuestItem item)
+    public void AddDeliverObjective(QuestItem item, Npc deliverTarget)
     {
-        m_objectives.Add(typeof(QuestObjectiveDeliver), new QuestObjectiveDeliver(item));
-        m_description += m_objectives[typeof(QuestObjectiveDeliver)].ToString();
+        m_objectives.Add(QuestObjectiveType.Deliver, new QuestObjectiveDeliver(item,deliverTarget));
+        m_description += m_objectives[QuestObjectiveType.Deliver].ToString();
     }
 
+    public void SetQuestReturn(Npc questReturn)
+    {
+        m_questReturn = questReturn;
+    }
+
+    /// <summary>
+    /// Complete kill objective and return kill targets for network deletion
+    /// </summary>
+    /// <returns></returns>
+    public Npc[] CompleteKillQuestObjective()
+    {
+        QuestObjective obj;
+        if(m_objectives.TryGetValue(QuestObjectiveType.Kill, out obj))
+        {
+            QuestObjectiveKill killObj = (QuestObjectiveKill)obj;
+            killObj.ForceComplete();
+            return killObj.targets;
+        }
+        return null;
+
+    }
+
+    /// <summary>
+    /// returns true if collect objective was found and completed
+    /// </summary>
+    /// <returns></returns>
+    public bool CompleteQuestCollectObjective()
+    {
+        QuestObjective obj;
+        if (m_objectives.TryGetValue(QuestObjectiveType.Collect, out obj))
+        {
+            QuestObjectiveCollect cObj = (QuestObjectiveCollect)obj;
+            cObj.ForceComplete();
+            return true;
+        }
+        return false;
+    }
+
+    /// <summary>
+    /// returns the target npc for the completed deliver objective, returns null if no objective was found
+    /// </summary>
+    /// <returns></returns>
+    public Npc GetQuestDeliverObjective()
+    {
+        QuestObjective obj;
+        if (m_objectives.TryGetValue(QuestObjectiveType.Deliver, out obj))
+        {
+            QuestObjectiveDeliver dObj = (QuestObjectiveDeliver)obj;
+            dObj.ForceComplete();
+            return dObj.deliverTarget;
+        }
+        return null;
+    }
+
+    public Npc GetDeliverObjectiveTarget()
+    {
+        QuestObjective obj;
+        if (m_objectives.TryGetValue(QuestObjectiveType.Deliver, out obj))
+        {
+            QuestObjectiveDeliver dObj = (QuestObjectiveDeliver)obj;
+            return dObj.deliverTarget;
+        }
+        return null;
+    }
+
+    public Npc[] GetKillObjectiveTargets()
+    {
+        QuestObjective obj;
+        if (m_objectives.TryGetValue(QuestObjectiveType.Kill, out obj))
+        {
+            QuestObjectiveKill killObj = (QuestObjectiveKill)obj;
+            return killObj.targets;
+        }
+        return null;
+    }
 
     public bool Start()
     {
@@ -227,7 +337,7 @@ public class Quest {
 
     public bool Completed()
     {
-        foreach (KeyValuePair<Type, QuestObjective> pair in m_objectives)
+        foreach (KeyValuePair<QuestObjectiveType, QuestObjective> pair in m_objectives)
         {
             if (!pair.Value.isComplete())
             {

@@ -56,6 +56,70 @@ public class World : MonoBehaviour {
             return m_instance;
         }
     }
+
+    public void HndQuestCmpl(Quest questToBeCompleted, out bool questsRemoved)
+    {
+        var x = questToBeCompleted.CompleteKillQuestObjective();
+        questsRemoved = false;
+        if (x != null)
+        {
+            //handle kill objective
+            for (int i = 0; i < x.Length; i++)
+            {
+                var net = factionMembershipNetwork[x[i].faction];
+                for (int j = 0; j < net.Connections.Count; j++)
+                    if(net.Connections[j].First.data == x[i] || net.Connections[j].Second.data == x[i])
+                        net.Connections.Remove(net.Connections[j]);
+                for(int j = 0; j < net.Nodes.Count; j++)
+                {
+                    if (net.Nodes[j].data == x[i])
+                    {
+                        net.Nodes.Remove(net.Nodes[j]);
+                        break;
+                    }
+                }
+                for(int j = 0; j < settlementNetwork.Nodes.Count; j++)
+                {
+                    var settlement = settlementNetwork.Nodes[j].data;
+                    if (!settlement.inhabitands.Contains(x[i]))
+                        continue;
+                    for (int k = 0; k < settlement.localNPCNetwork.Connections.Count; k++)
+                        if (settlement.localNPCNetwork.Connections[k].First.data == x[i] ||
+                            settlement.localNPCNetwork.Connections[k].Second.data == x[i])
+                            settlement.localNPCNetwork.Connections.Remove(settlement.localNPCNetwork.Connections[k]);
+                    
+                    for(int k = 0; k < settlement.localNPCNetwork.Nodes.Count; k++)
+                        if(settlement.localNPCNetwork.Nodes[k].data == x[i])
+                        {
+                            settlement.localNPCNetwork.Nodes.Remove(settlement.localNPCNetwork.Nodes[k]);
+                            break;
+                        }
+
+                }
+
+                var quests = m_quests.IsNpcInvolvedInQuest(x[i]);
+                for(int j = 0; j < quests.Count;j++)
+                {
+                    if (quests[j] != questToBeCompleted)
+                        m_quests.generatedQuests.Remove(quests[i]);
+                }
+                quests.Clear();
+                Destroy(x[i]);
+            }
+            questsRemoved = true;
+            return;
+        }
+
+        if (questToBeCompleted.CompleteQuestCollectObjective())
+            return;
+        var y = questToBeCompleted.GetQuestDeliverObjective();
+        if(y!=null)
+        {
+            //handle deliver target
+
+            return;
+        }
+    }
     // Use this for initialization
     void Awake ()
     {

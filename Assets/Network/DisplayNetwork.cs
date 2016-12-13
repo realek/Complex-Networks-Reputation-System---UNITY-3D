@@ -7,6 +7,7 @@ public class DisplayNetwork : MonoBehaviour {
     public World world;
     public int currentDisplayFaction = 0;
     public int currentDisplaySettlement = 0;
+    public int currentDisplayQuest = 0;
     private bool m_displaySettlementsNetwork;
     private bool m_displayLocalSettlementNetwork;
     private bool m_displayNpcFactionNetwork;
@@ -62,6 +63,30 @@ public class DisplayNetwork : MonoBehaviour {
     {
         currentDisplayFaction++;
         currentDisplayFaction = Mathf.Clamp(currentDisplayFaction, 0, world.factions.Count - 1);
+    }
+    public void NextQuest()
+    {
+        if(world.quests.generatedQuests!=null)
+            if(world.quests.generatedQuests.Count-1 > currentDisplayQuest)
+                currentDisplayQuest++;
+        
+    }
+    public void PreviousQuest()
+    {
+        if (world.quests.generatedQuests != null)
+            if (currentDisplayQuest > 1)
+                currentDisplayQuest--;
+    }
+    public void CompleteCurrentQuest()
+    {
+        if (world.quests.generatedQuests != null)
+            if (!world.quests.generatedQuests[currentDisplayQuest].Completed())
+            {
+                bool resetQuestPosition;
+                world.HndQuestCmpl(world.quests.generatedQuests[currentDisplayQuest], out resetQuestPosition);
+                if (resetQuestPosition)
+                    currentDisplayQuest = 0;
+            }
     }
     private void OnDrawGizmos()
     {
