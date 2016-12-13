@@ -4,6 +4,7 @@ using System.Collections.Generic;
 
 public class DisplayNetwork : MonoBehaviour {
 
+    public QuestUI questUI;
     public World world;
     public int currentDisplayFaction = 0;
     public int currentDisplaySettlement = 0;
@@ -66,16 +67,22 @@ public class DisplayNetwork : MonoBehaviour {
     }
     public void NextQuest()
     {
-        if(world.quests.generatedQuests!=null)
-            if(world.quests.generatedQuests.Count-1 > currentDisplayQuest)
+        if (world.quests.generatedQuests != null)
+        {
+            if (world.quests.generatedQuests.Count - 1 > currentDisplayQuest)
                 currentDisplayQuest++;
+            questUI.DisplayQuest(world.quests.generatedQuests[currentDisplayQuest]);
+        }
         
     }
     public void PreviousQuest()
     {
         if (world.quests.generatedQuests != null)
+        {
             if (currentDisplayQuest > 1)
                 currentDisplayQuest--;
+            questUI.DisplayQuest(world.quests.generatedQuests[currentDisplayQuest]);
+        }
     }
     public void CompleteCurrentQuest()
     {
@@ -86,7 +93,15 @@ public class DisplayNetwork : MonoBehaviour {
                 world.HndQuestCmpl(world.quests.generatedQuests[currentDisplayQuest], out resetQuestPosition);
                 if (resetQuestPosition)
                     currentDisplayQuest = 0;
+                questUI.DisplayQuest(world.quests.generatedQuests[currentDisplayQuest]);
             }
+    }
+
+    private void Start()
+    {
+        if (world != null && world.quests.generatedQuests.Count > 0)
+            questUI.DisplayQuest(world.quests.generatedQuests[currentDisplayQuest]);
+
     }
     private void OnDrawGizmos()
     {

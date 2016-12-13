@@ -104,7 +104,7 @@ public class World : MonoBehaviour {
                         m_quests.generatedQuests.Remove(quests[i]);
                 }
                 quests.Clear();
-                Destroy(x[i]);
+                Destroy(x[i].gameObject);
             }
             questsRemoved = true;
             return;
@@ -131,10 +131,7 @@ public class World : MonoBehaviour {
         }
         else
             m_instance = this;
-    }
 
-    private void Start()
-    {
         for (int i = 0; i < m_allFactions.Count; i++)
         {
             for (int j = 0; j < m_allFactions.Count; j++)
@@ -206,8 +203,8 @@ public class World : MonoBehaviour {
 
             if (m_factionsNetwork[m_allFactions[i]] == null)
                 continue;
-            var conn =  m_factionsNetwork[m_allFactions[i]].Connections;
-           
+            var conn = m_factionsNetwork[m_allFactions[i]].Connections;
+
             for (int j = 0; j < conn.Count; j++)
             {
                 if (conn[j].First.data.GetRelationship(conn[j].Second.data) != Relationship.None)
@@ -255,7 +252,7 @@ public class World : MonoBehaviour {
                         case Relationship.Neutral:
                             ch = Random.Range(0, 3);
 
-                            switch(ch)
+                            switch (ch)
                             {
                                 case 0: //deliver
                                     m_quests.GenerateDeliverQuest(conn[j]);
@@ -274,5 +271,8 @@ public class World : MonoBehaviour {
                 }
             }
         }
+
+
+
     }
 }

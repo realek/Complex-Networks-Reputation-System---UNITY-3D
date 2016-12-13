@@ -39,6 +39,7 @@ public class QuestManager {
     {
         Quest nQ = new Quest("Random Deliver Quest #" + 1 + ((Random.value + Random.value) / Random.value * Random.value), nodeConnection.First.data);
         nQ.AddDeliverObjective((QuestItem)Random.Range(0, 11),nodeConnection.Second.data);
+        nQ.SetQuestReturn(nodeConnection.Second.data);
         m_generatedQuests.Add(nQ);
     }
 
