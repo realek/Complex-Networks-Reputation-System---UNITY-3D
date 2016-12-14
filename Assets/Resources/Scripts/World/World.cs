@@ -100,7 +100,6 @@ public class World : MonoBehaviour {
                 var quests = m_quests.IsNpcInvolvedInQuest(x[i]);
                 for(int j = 0; j < quests.Count;j++)
                 {
-                    if (quests[j] != questToBeCompleted)
                         m_quests.generatedQuests.Remove(quests[i]);
                 }
                 quests.Clear();
@@ -111,11 +110,15 @@ public class World : MonoBehaviour {
         }
 
         if (questToBeCompleted.CompleteQuestCollectObjective())
+        {
+            m_quests.generatedQuests.Remove(questToBeCompleted);
             return;
+        }
         var y = questToBeCompleted.GetQuestDeliverObjective();
         if(y!=null)
         {
-            //handle deliver target
+            m_quests.generatedQuests.Remove(questToBeCompleted);
+            //handle deliver target, no reputation change done at the current moment
 
             return;
         }

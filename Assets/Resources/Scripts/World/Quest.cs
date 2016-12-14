@@ -40,6 +40,9 @@ public enum QuestObjectiveType
 [Serializable]
 public class Quest {
 
+    /// <summary>
+    /// Base quest objective class
+    /// </summary>
     private abstract class QuestObjective
     {
         public abstract bool isComplete();
@@ -47,6 +50,9 @@ public class Quest {
         public abstract void ForceComplete();
     }
 
+    /// <summary>
+    /// Derived kill objective class
+    /// </summary>
     [Serializable]
     private sealed class QuestObjectiveKill : QuestObjective
     {
@@ -94,6 +100,9 @@ public class Quest {
             m_cKillCount = m_neededKillCount;
         }
     }
+    /// <summary>
+    /// derived collect objective class
+    /// </summary>
     [Serializable]
     private sealed class QuestObjectiveCollect : QuestObjective
     {
@@ -134,6 +143,9 @@ public class Quest {
             m_cCollectCount = m_neededCollectCount;
         }
     }
+    /// <summary>
+    /// derived deliver objective class
+    /// </summary>
     [Serializable]
     private sealed class QuestObjectiveDeliver : QuestObjective
     {
@@ -230,24 +242,44 @@ public class Quest {
         m_questStarter = questStarter;
     }
 
+    /// <summary>
+    /// Add kill objective to quest, one objective of this type per quest
+    /// </summary>
+    /// <param name="count"></param>
+    /// <param name="targetType"></param>
+    /// <param name="targets"></param>
     public void AddKillObjective(int count,QuestTarget targetType,params Npc[] targets)
     {
         m_objectives.Add(QuestObjectiveType.Kill, new QuestObjectiveKill(count, targetType,targets));
         m_description += m_objectives[QuestObjectiveType.Kill].ToString();
     }
 
+    /// <summary>
+    /// add collect objective to quest, one objective of this type per quest
+    /// </summary>
+    /// <param name="count"></param>
+    /// <param name="items"></param>
     public void AddCollectObjective(int count, params QuestItem[] items)
     {
         m_objectives.Add(QuestObjectiveType.Collect, new QuestObjectiveCollect(count, items));
         m_description += m_objectives[QuestObjectiveType.Collect].ToString();
     }
 
+    /// <summary>
+    /// add deliver objective to quest, one objective of this type per quest.
+    /// </summary>
+    /// <param name="item"></param>
+    /// <param name="deliverTarget"></param>
     public void AddDeliverObjective(QuestItem item, Npc deliverTarget)
     {
         m_objectives.Add(QuestObjectiveType.Deliver, new QuestObjectiveDeliver(item,deliverTarget));
         m_description += m_objectives[QuestObjectiveType.Deliver].ToString();
     }
 
+    /// <summary>
+    /// Set quest return/handin npc, can be the same as the quest giver or another npc
+    /// </summary>
+    /// <param name="questReturn"></param>
     public void SetQuestReturn(Npc questReturn)
     {
         m_questReturn = questReturn;
@@ -302,6 +334,10 @@ public class Quest {
         return null;
     }
 
+    /// <summary>
+    /// Returns the current deliver objective target
+    /// </summary>
+    /// <returns></returns>
     public Npc GetDeliverObjectiveTarget()
     {
         QuestObjective obj;
@@ -313,6 +349,10 @@ public class Quest {
         return null;
     }
 
+    /// <summary>
+    /// returns the current kill objective targets
+    /// </summary>
+    /// <returns></returns>
     public Npc[] GetKillObjectiveTargets()
     {
         QuestObjective obj;
@@ -335,6 +375,10 @@ public class Quest {
             return false;
     }
 
+    /// <summary>
+    /// Retruns true if all objectives within the quest are completed
+    /// </summary>
+    /// <returns></returns>
     public bool Completed()
     {
         foreach (KeyValuePair<QuestObjectiveType, QuestObjective> pair in m_objectives)

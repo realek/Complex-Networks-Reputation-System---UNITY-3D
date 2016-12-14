@@ -40,6 +40,8 @@ public enum Relationship
 
 public class Npc : MonoBehaviour
 {
+    [SerializeField]
+    private GameObject deathEffect;
     public static readonly List<Morality> Neutrals = new List<Morality>()
     { Morality.TrueNeutral,Morality.ChaoticNeutral,Morality.LawfulNeutral };
     public static readonly List<Morality> Goods = new List<Morality>()
@@ -189,5 +191,11 @@ public class Npc : MonoBehaviour
     public void Die()
     {
         m_alive = false;
+    }
+
+    private void OnDestroy()
+    {
+        var ps = Instantiate(deathEffect, transform.position, Quaternion.identity).GetComponent<NpcDeathVisual>();
+        ps.RunOnce();
     }
 }
